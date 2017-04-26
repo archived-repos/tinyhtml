@@ -1,6 +1,4 @@
 
-var tagReplacer = {};
-
 function TagValues (attrs, body) {
   this.attrs = attrs;
   this.body = body;
@@ -15,10 +13,14 @@ TagValues.prototype.parsedAttributes = function () {
   }, {})
 };
 
-function replaceTag (tag, html, cb) {
-  if( !tagReplacer[tag] ) tagReplacer[tag] = new RegExp('<' + tag + ' (.*?)>(.*?)</' + tag + '>', 'g');
-  return html.replace(tagReplacer[tag], function (_matched, attrs, body) {
-    return cb(new TagValues(attrs, body));
+var tagReplacer = {};
+function replaceTag (tagName, html, cb) {
+  if( !tagReplacer[tagName] ) tagReplacer[tagName] = new RegExp('<' + tagName + ' (.*?)>(.*?)</' + tagName + '>', 'g');
+  return html.replace(tagReplacer[tagName], function (_matched, attrs, body) {
+    var node = new TagValues(attrs, body),
+        result = cb(node);
+
+    return '<' + tagName + ' ' + node.attrs + '>' + result + '</' + tagName + '>';
   });
 }
 
