@@ -25,17 +25,6 @@ Object.defineProperty(TagValues.prototype, 'attrs', {
   }
 });
 
-// TagValues.prototype.parsedAttributes = function () {
-//   if( !this.$$parsedAttributes ) this.$$parsedAttributes = this.attrs.match(/[a-z][a-z-]+(=".*?")?/g).reduce(function (attrs, attr) {
-//     attr.replace(/([a-z][a-z-]+)(="(.*?)")?/, function (matched, name, hasValue, value) {
-//       attrs[name] = hasValue ? value : '';
-//     });
-//     return attrs;
-//   }, {});
-//
-//   return this.$$parsedAttributes;
-// };
-
 var tagReplacer = {};
 function replaceTag (tagName, html, cb) {
   if( !tagReplacer[tagName] ) tagReplacer[tagName] = new RegExp('<' + tagName + ' (.*?)>(.*?)</' + tagName + '>', 'g');
