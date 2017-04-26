@@ -4,7 +4,8 @@
   "description": "HTML minifier",
   "main": "tinyhtml.js",
   "scripts": {
-    "test": "mocha tests"
+    "test": "mocha tests",
+    "prepublish": "npm version patch && git push origin $(git rev-parse --abbrev-ref HEAD)"
   },
   "repository": {
     "type": "git",
