@@ -24,15 +24,18 @@ function replaceTag (tagName, html, cb) {
   });
 }
 
+function sanitizedAttribute (_matched, name, value, followsSpace) {
+  return name + '="' + value + '"' + (followsSpace ? ' ' : '');
+}
+
+function cleanTag (_matched, tag) {
+  return tag.replace(/([a-z][a-z-]+)="\s*(.*?)\s*"(\s+)?/g, sanitizedAttribute);
+}
+
 function tinyHTML (html, options) {
   options = options || {};
 
-  var result = html.replace(/\n/g, '')
-    .replace(/([a-z][a-z-]+)="\s+(.*?)"/g, '$1="$2"')
-    .replace(/([a-z][a-z-]+)="(.*?)\s+"/g, '$1="$2"')
-    .replace(/([a-z][a-z-]+=".*?")\s+/g, '$1 ')
-    .replace(/<(.*?)>\s+/g, '<$1>')
-    .replace(/\s+<(.*?)>/g, '<$1>');
+  var result = html.replace(/\n/g, '').replace(/\s*(<.*?>)\s*/g, cleanTag);
 
   if( options.removeComments || options.removeComments === undefined ) {
     result = result.replace(/<!--[\s\S]+(?=-->)-->/g, '');
