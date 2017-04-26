@@ -2,8 +2,8 @@
 # tinyhtml
 
 [![npm](https://img.shields.io/npm/v/tinyhtml.svg?maxAge=2592000)](https://www.npmjs.com/package/tinyhtml)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/kiltjs/nitro/master/LICENSE)
 [![Build Status](https://travis-ci.org/kiltjs/live-dom.svg?branch=master)](https://travis-ci.org/kiltjs/live-dom)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/kiltjs/nitro/master/LICENSE)
 
 Compact, reliable and customizable HTML minifier.
 
