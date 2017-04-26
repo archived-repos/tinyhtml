@@ -1,0 +1,24 @@
+{
+  "name": "tinyhtml",
+  "version": "0.0.3",
+  "description": "HTML minifier",
+  "main": "tinyhtml.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kiltjs/tinyhtml.git"
+  },
+  "keywords": [
+    "html",
+    "minify",
+    "minifier"
+  ],
+  "author": "Jesús Germade <jesus@germade.es>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiltjs/tinyhtml/issues"
+  },
+  "homepage": "https://github.com/kiltjs/tinyhtml#readme"
+}
