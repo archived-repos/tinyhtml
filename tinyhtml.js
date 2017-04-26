@@ -47,7 +47,11 @@ function cleanTag (_matched, tag) {
 function tinyHTML (html, options) {
   options = options || {};
 
-  var result = html.replace(/\n/g, '').replace(/\t+/g, ' ').replace(/\s*(<.*?>)\s*/g, cleanTag);
+  var result = html.replace(/\n/g, '');
+
+  if( options.removeAttributeSpaces || options.removeAttributeSpaces === undefined ) {
+    result = result.replace(/\s+/g, ' ');
+  }
 
   if( options.removeComments || options.removeComments === undefined ) {
     result = result.replace(/<!--[\s\S]+(?=-->)-->/g, '');
@@ -57,7 +61,9 @@ function tinyHTML (html, options) {
     result = replaceTag(tag, result, options.parsers[tag] );
   }
 
+  result = result.replace(/\s*(<.*?>)\s*/g, cleanTag);
+
   return result;
-};
+}
 
 module.exports = tinyHTML;

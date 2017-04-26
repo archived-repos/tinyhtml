@@ -4,8 +4,7 @@
   "description": "HTML minifier",
   "main": "tinyhtml.js",
   "scripts": {
-    "test": "mocha tests",
-    "prepublish": "npm version patch && git push origin $(git rev-parse --abbrev-ref HEAD)"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
@@ -23,6 +22,7 @@
   },
   "homepage": "https://github.com/kiltjs/tinyhtml#readme",
   "devDependencies": {
+    "eslint": "^3.19.0",
     "mocha": "^3.3.0"
   }
 }
