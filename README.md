@@ -51,13 +51,13 @@ tinyHTML(`
 
 ``` js
 var htmlSnippet = `foo<script src="http://example.com/script.js">
-    var hola = function caracola () {};
-  </script>bar`;
+  var hola = function caracola () {};
+</script>bar`;
 
 tinyHTML(htmlSnippet, {
   parsers: {
     script: function (tag) {
-      return 'var href = \'' + tag.attrs.src + '\';';
+      return tag.body + '\n  var href = \'' + tag.attrs.src + '\';\n';
     }
   }
 });
@@ -66,5 +66,8 @@ tinyHTML(htmlSnippet, {
 > Result
 
 ``` html
-foo<script src="http://example.com/script.js">var href = 'http://example.com/script.js';</script>bar
+foo<script src="http://example.com/script.js">
+  var hola = function caracola () {};
+  var href = 'http://example.com/script.js';
+</script>bar
 ```
