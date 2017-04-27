@@ -55,7 +55,7 @@ function tinyHTML (html, options) {
   }
 
   if( options.removeComments || options.removeComments === undefined ) {
-    result = result.replace(/<!--[\s\S]+(?=-->)-->/g, '');
+    result = result.replace(/<!--[\s\S]+?-->/g, '');
   }
 
   if( options.parsers ) for( var tag in options.parsers ) {
