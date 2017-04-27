@@ -1,11 +1,12 @@
 
 # tinyhtml
 
+Compact, reliable and customizable HTML minifier.
+
 [![npm](https://img.shields.io/npm/v/tinyhtml.svg?maxAge=2592000)](https://www.npmjs.com/package/tinyhtml)
 [![Build Status](https://travis-ci.org/kiltjs/live-dom.svg?branch=master)](https://travis-ci.org/kiltjs/live-dom)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Compact, reliable and customizable HTML minifier.
 
 ### Installation
 
