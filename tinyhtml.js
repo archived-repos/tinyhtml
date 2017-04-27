@@ -37,6 +37,7 @@ function replaceTag (tagName, html, cb) {
 }
 
 function sanitizedAttribute (_matched, name, value, followsSpaces) {
+  if( name === 'style' ) value = value.replace(/([:;])\s+/g, '$1');
   return name + '="' + value + '"' + (followsSpaces ? ' ' : '');
 }
 
