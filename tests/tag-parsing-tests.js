@@ -1,3 +1,4 @@
+/* global describe, it */
 
 var tinyHTML = require('../tinyhtml'),
     assert = require('assert');
@@ -12,7 +13,7 @@ describe('parsing tags', function () {
 
     assert.strictEqual( tinyHTML(snippet_script, {
       parsers: {
-        script: function (tag) {
+        script: function (_tag) {
           return '';
         }
       }

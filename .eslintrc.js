@@ -1,6 +1,7 @@
 module.exports = {
     "env": {
-      "browser": true
+      "browser": true,
+      "es6": true
     },
     "globals": {
       "module": true,
@@ -16,7 +17,8 @@ module.exports = {
       ],
       "quotes": [
           "error",
-          "single"
+          "single",
+          { "allowTemplateLiterals": true }
       ],
       "semi": [
           "error",

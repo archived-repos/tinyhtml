@@ -1,3 +1,4 @@
+/* global describe, it */
 
 var tinyHTML = require('../tinyhtml'),
     assert = require('assert');
