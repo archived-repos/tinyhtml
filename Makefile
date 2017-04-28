@@ -9,6 +9,7 @@ install:
 
 eslint:
 	$(shell npm bin)/eslint tinyhtml.js
+	$(shell npm bin)/eslint tests
 
 karma:
 	@$(shell npm bin)/karma start karma.conf.js
