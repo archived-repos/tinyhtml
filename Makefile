@@ -7,6 +7,8 @@ install:
 	npm install
 
 eslint:
+	$(shell npm bin)/eslint parser.js
+	$(shell npm bin)/eslint unparser.js
 	$(shell npm bin)/eslint tinyhtml.js
 	$(shell npm bin)/eslint tests
 

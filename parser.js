@@ -1,11 +1,12 @@
 
 function _parseTag (tag_str) {
   // var tag = { attrs: {} };
-  var tag = {};
+  var tag = { _: [] };
+      // tag = Object.create(tag_proto);
 
   return tag_str
     .replace(/^<|>$/g, '')
-    .replace(/\/$/, function () {
+    .replace(/ *\/$/, function () {
       tag.self_closed = true;
       return '';
     })
@@ -14,7 +15,6 @@ function _parseTag (tag_str) {
       tag.closer = true;
       return '';
     })
-    .trim()
     .replace(/^[^ ]+/, function (node_name) {
       tag.$ = node_name;
       return '';
@@ -34,21 +34,27 @@ function _parseTag (tag_str) {
   ;
 }
 
-function parseHTML (html) {
+function _trimText (text) {
+  return text.replace(/ +\n+|\n+ +/g, '');
+}
+
+function _parseHTML (html, options) {
+  options = options || {};
   // removing comments
   html = html.replace(/<!--([\s\S]+?)-->/g, '');
 
   var contents = html.split(/<[^>]+?>/g);
   // var tags = html.match(/<([^>]+?)>/g);
-  var nodes = [],
-      node_opened = { $: '__root__', _: nodes };
+  var nodes = options.nodes || [],
+      node_opened = options.node_opened || { $: '__root__', _: nodes };
 
-  var tags = html.match(/<([^>]+?)>/g).map(function (tag, i) {
+  (html.match(/<([^>]+?)>/g) ||[]).map(function (tag, i) {
 
-    if( /^\s+$/.test(contents[i]) ) contents[i] = '';
+    // if( /^\s+$/.test(contents[i]) ) contents[i] = '';
 
-    if( i && contents[i] ) node_opened._.push({
-      text: contents[i],
+    // if( i && contents[i] && !/^\s+$/.test(contents[i]) ) node_opened._.push({
+    if( /\S/.test(contents[i]) ) node_opened._.push({
+      text: _trimText(contents[i]),
     });
 
     tag = _parseTag(tag);
@@ -60,7 +66,7 @@ function parseHTML (html) {
       node_opened._.push(tag);
     } else {
       tag._parent = node_opened;
-      tag._ = [];
+      // tag._ = [];
       node_opened._.push(tag);
       node_opened = tag;
     }
@@ -69,22 +75,82 @@ function parseHTML (html) {
 
   });
 
-  // cleaning and avoiding circular structure
-  tags.forEach(function (tag) {
+  if( /^\S$/.test(contents[contents.length - 1]) ) nodes.push({
+    text: _trimText(contents[contents.length - 1]),
+  });
+
+  return {
+    nodes: nodes,
+    node_opened: node_opened,
+  };
+}
+
+var full_content_tags = [
+  'script',
+  'style',
+  'code',
+];
+
+var RE_full_content = new RegExp(full_content_tags.map(function (tag_name) {
+  return '<' + tag_name + '[^>]*>|<\\/' + tag_name + '>';
+}).join('|'), 'g');
+
+// var RE_full_content = new RegExp('<(' + full_content_tags.join('|') + ')[^>]*>|<\\/(' + full_content_tags.join('|') + ')>', 'g');
+
+function _cleanNodes (nodes) {
+  nodes.forEach(function (tag) {
+    // avoiding circular structure
     delete tag._parent;
-    if( tag._ && !tag._.length ) delete tag._;
+    // cleaning empty children
+
+    if( tag._ instanceof Array ) {
+      if( !tag._.length ) delete tag._;
+      else _cleanNodes(tag._);
+    }
   });
-
-  if( contents[contents.length - 1] && !/^\s+$/.test(contents[contents.length - 1]) ) nodes.push({
-    text: contents[contents.length - 1],
-  });
-
-  // return {
-  //   tags: tags,
-  //   contents: contents,
-  // };
-
   return nodes;
+}
+
+function parseHTML (html, _options) {
+  var tags = html.match(RE_full_content) ||[],
+      contents = html.split(RE_full_content),
+      tag_opened = null,
+      nodes = [],
+      last_parse = {};
+
+  tags.forEach(function (tag, i) {
+
+    if( tag_opened ) tag_opened._ = contents[i];
+    else (function (parse_result) {
+      last_parse = parse_result;
+    })( _parseHTML(contents[i], {
+      nodes: nodes,
+      node_opened: last_parse.node_opened,
+    }) );
+
+    tag = _parseTag(tag);
+
+    if( tag.closer ) {
+      if( !tag_opened || tag_opened.$ !== tag.$ ) throw new Error('tag closer \'' + tag.$ + '\' for \'' + (tag_opened ? tag_opened.$ : '!tag_opened') + '\'' );
+      tag_opened = null;
+    } else {
+      tag_opened = tag;
+      if( last_parse.node_opened ) {
+        last_parse.node_opened._ = last_parse.node_opened._ || [];
+        last_parse.node_opened._.push(tag);
+      } else {
+        nodes.push(tag);
+      }
+    }
+
+  });
+
+  _parseHTML(contents[contents.length - 1], {
+    nodes: nodes,
+    node_opened: last_parse.node_opened,
+  });
+
+  return _cleanNodes(nodes);
 }
 
 module.exports = parseHTML;
