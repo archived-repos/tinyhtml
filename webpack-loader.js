@@ -3,6 +3,21 @@
 
 import tinyHTML from './tinyhtml';
 
+function _stringify (o) {
+  if( o instanceof Array ) {
+    return '[' + o.map(function (_o) {
+      return _stringify(_o);
+    }).join(',') + ']';
+  } else if( typeof o === 'object' && o !== null ) {
+    return '{' + Object.keys(o).map(function (key) {
+      return key + ': ' + _stringify(o[key]);
+    }).join(',') + '}'
+  } else if( o instanceof Function ) {
+    return o.toString();
+  } else return o;
+}
+
+
 function _extractScripts (nodes, parent) {
 
   for( var i = nodes.length - 1 ; i >= 0 ; i-- ) {
@@ -19,11 +34,7 @@ function _extractScripts (nodes, parent) {
 }
 
 function processHTML (html) {
-  var nodes = tinyHTML.parse(html);
-
-  _extractScripts(nodes);
-
-  return nodes;
+  return _stringify( _extractScripts(tinyHTML.parse(html)) );
 }
 
 function webpackLoader (source) {

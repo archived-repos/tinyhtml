@@ -47,14 +47,6 @@ function _processNode (_node, processor, options) {
   }
 
   return result;
-
-  // return (node.$ ?
-  //   ( '<' + ( node.self_closed ? '/' : '' ) + node.$ + _stringifyAttrs(node.attrs) + '>' ) :
-  //     (node.text || '')
-  //   ) + ( node.self_closed ?
-  //     '' :
-  //     ( (node._ ? _stringifyNodes(node._, options) : '') + ( !node.unclosed && node.$ ? '' : ('</' + node.$ + '>') ) )
-  //   );
 }
 
 function _stringifyNodes (nodes, options) {
