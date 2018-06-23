@@ -9,7 +9,13 @@ describe('parser', function () {
 
     assert.deepEqual( parseHTML(`
 <div id="foobar">foo</div>
-    `), [{ $:'div', id: 'foobar', _:[{ text: 'foo' }] }] );
+    `), [{ $:'div', attrs:{ id: 'foobar' }, _:[{ text: 'foo' }] }] );
+
+  });
+
+  it('throws', function () {
+
+    assert.throws( () => parseHTML('<div id="foobar">'), Error );
 
   });
 
@@ -19,7 +25,7 @@ describe('parser', function () {
 <script template:type="text/javascript">
   var foo = 'bar';
 </script>
-    `), [{ $:'script', 'template:type': 'text/javascript', _:`
+    `), [{ $:'script', attrs: { 'template:type': 'text/javascript' }, _:`
   var foo = 'bar';
 ` }] );
 
@@ -36,7 +42,7 @@ describe('parser', function () {
 <html>
 </code></pre>
     `), [{ $:'pre', _: [{
-      $: 'code', class: 'language-html', _: `
+      $: 'code', attrs: { class: 'language-html' }, _: `
 <!DOCTYPE html>
 <html>
   <head></head>

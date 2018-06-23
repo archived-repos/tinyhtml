@@ -9,12 +9,24 @@ var snippet_script = `foo<script src="http://example.com/script.js">
 
 describe('parsing tags', function () {
 
+  it('foobar', function () {
+
+    assert.strictEqual( tinyHTML(snippet_script, {
+      processors: {
+        script: function (_tag) {
+          return 'foobar';
+        }
+      }
+    }), `foofoobarbar`, 'accesing attributes');
+
+  });
+
   it('script', function () {
 
     assert.strictEqual( tinyHTML(snippet_script, {
-      parsers: {
-        script: function (_tag) {
-          return '';
+      processors: {
+        script: function (tag) {
+          tag._ = '';
         }
       }
     }), 'foo<script src="http://example.com/script.js"></script>bar', 'compress');
@@ -24,21 +36,21 @@ describe('parsing tags', function () {
   it('script attrs_str', function () {
 
     assert.strictEqual( tinyHTML(snippet_script, {
-      parsers: {
-        script: function (tag) {
-          return tag.attrs_str;
+      processors: {
+        script: function (tag, getContent, getAttrs) {
+          tag._ = getAttrs();
         }
       }
-    }), 'foo<script src="http://example.com/script.js">src="http://example.com/script.js"</script>bar', 'compress');
+    }), 'foo<script src="http://example.com/script.js"> src="http://example.com/script.js"</script>bar', 'compress');
 
   });
 
   it('script attrs', function () {
 
     assert.strictEqual( tinyHTML(snippet_script, {
-      parsers: {
+      processors: {
         script: function (tag) {
-          return 'var href = \'' + tag.attrs.src + '\';';
+          tag._ = 'var href = \'' + tag.attrs.src + '\';';
         }
       }
     }), `foo<script src="http://example.com/script.js">var href = 'http://example.com/script.js';</script>bar`, 'accesing attributes');

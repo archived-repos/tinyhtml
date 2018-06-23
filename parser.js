@@ -1,7 +1,7 @@
 
-function _parseTag (tag_str) {
-  // var tag = { attrs: {} };
-  var tag = { _: [] };
+function _parseTag (tag_str, options) {
+  var tag = { attrs: {}, _: [], unclosed: true };
+  // var tag = { _: [] };
       // tag = Object.create(tag_proto);
 
   return tag_str
@@ -17,31 +17,36 @@ function _parseTag (tag_str) {
     })
     .replace(/^[^ ]+/, function (node_name) {
       tag.$ = node_name;
+      if( /^!/.test(node_name) ) tag.warn = true;
       return '';
     })
-    .replace(/([^=]+)="([\s\S]*?)"|([^=]+)='([\s\S]*?)'/g, function (_matched, attribute, value) {
-      // tag.attrs[attribute.trim()] = value;
-      tag[attribute.trim()] = value;
+    .replace(/ *([^=]+) *= *"([\s\S]*?)"| *([^=]+) *= *'([\s\S]*?)'/g, function (_matched, attribute, value) {
+      if( attribute === 'style' ) value = value.replace(/([:;])\s+/g, '$1');
+      if( options.compress_attibutes !== false ) value = value.replace(/ *\n */g, '').trim();
+      tag.attrs[attribute] = value;
+      // tag[attribute.trim()] = value;
       return '';
     })
     .split(/ +/)
     .reduce(function (tag, empty_attr) {
       if( !empty_attr ) return tag;
-      // tag.attrs[empty_attr.trim()] = '';
-      tag[empty_attr.trim()] = '';
+      tag.attrs[empty_attr.trim()] = '';
+      // tag[empty_attr.trim()] = '';
       return tag;
     }, tag)
   ;
 }
 
 function _trimText (text) {
-  return text.replace(/ +\n+|\n+ +/g, '');
+  // return text.replace(/^ *\n+ *| *\n+ *$/g, '');
+  return text.replace(/ *\n+ */g, '');
 }
 
 function _parseHTML (html, options) {
   options = options || {};
+
   // removing comments
-  html = html.replace(/<!--([\s\S]+?)-->/g, '');
+  if( options.remove_comments !== false ) html = html.replace(/<!--([\s\S]+?)-->/g, '');
 
   var contents = html.split(/<[^>]+?>/g);
   // var tags = html.match(/<([^>]+?)>/g);
@@ -57,10 +62,11 @@ function _parseHTML (html, options) {
       text: _trimText(contents[i]),
     });
 
-    tag = _parseTag(tag);
+    tag = _parseTag(tag, options);
 
     if( tag.closer ) {
       if( tag.$ !== node_opened.$ ) throw new Error('tag closer \'' + tag.$ + '\' for \'' + node_opened.$ + '\'' );
+      delete node_opened.unclosed;
       node_opened = node_opened._parent;
     } else if( tag.self_closed ) {
       node_opened._.push(tag);
@@ -75,7 +81,7 @@ function _parseHTML (html, options) {
 
   });
 
-  if( /^\S$/.test(contents[contents.length - 1]) ) nodes.push({
+  if( /\S$/.test(contents[contents.length - 1]) ) nodes.push({
     text: _trimText(contents[contents.length - 1]),
   });
 
@@ -101,54 +107,75 @@ function _cleanNodes (nodes) {
   nodes.forEach(function (tag) {
     // avoiding circular structure
     delete tag._parent;
-    // cleaning empty children
 
+    // cleaning empty attributes
+    if( tag.attrs && Object.keys(tag.attrs).length === 0 ) delete tag.attrs;
+
+    // cleaning empty children
     if( tag._ instanceof Array ) {
       if( !tag._.length ) delete tag._;
       else _cleanNodes(tag._);
     }
+
   });
   return nodes;
 }
 
-function parseHTML (html, _options) {
+function parseHTML (html, options) {
   var tags = html.match(RE_full_content) ||[],
       contents = html.split(RE_full_content),
       tag_opened = null,
       nodes = [],
       last_parse = {};
 
+  options = options || {};
+
   tags.forEach(function (tag, i) {
 
     if( tag_opened ) tag_opened._ = contents[i];
-    else (function (parse_result) {
-      last_parse = parse_result;
-    })( _parseHTML(contents[i], {
+    else last_parse = _parseHTML(contents[i], {
       nodes: nodes,
       node_opened: last_parse.node_opened,
-    }) );
+      remove_comments: options.remove_comments,
+      compress_attibutes: options.compress_attibutes
+    });
 
-    tag = _parseTag(tag);
+    // else (function (parse_result) {
+    //   last_parse = parse_result;
+    // })( _parseHTML(contents[i], {
+    //   nodes: nodes,
+    //   node_opened: last_parse.node_opened,
+    // }) );
+
+    tag = _parseTag(tag, options);
 
     if( tag.closer ) {
       if( !tag_opened || tag_opened.$ !== tag.$ ) throw new Error('tag closer \'' + tag.$ + '\' for \'' + (tag_opened ? tag_opened.$ : '!tag_opened') + '\'' );
+      delete tag_opened.unclosed;
       tag_opened = null;
     } else {
       tag_opened = tag;
-      if( last_parse.node_opened ) {
-        last_parse.node_opened._ = last_parse.node_opened._ || [];
-        last_parse.node_opened._.push(tag);
-      } else {
-        nodes.push(tag);
-      }
+      (last_parse.node_opened ? last_parse.node_opened._ : nodes).push(tag);
+
+      // if( last_parse.node_opened ) {
+      //   last_parse.node_opened._ = last_parse.node_opened._ || [];
+      //   last_parse.node_opened._.push(tag);
+      // } else {
+      //   nodes.push(tag);
+      // }
     }
 
   });
 
-  _parseHTML(contents[contents.length - 1], {
+  last_parse = _parseHTML(contents[contents.length - 1], {
     nodes: nodes,
     node_opened: last_parse.node_opened,
   });
+
+  // if( !options.ignore_unclosed && last_parse.node_opened && last_parse.node_opened.$ !== '__root__' && !last_parse.node_opened.warn ) {
+  if( !options.ignore_unclosed && last_parse.node_opened && last_parse.node_opened.unclosed && !last_parse.node_opened.warn ) {
+    throw new Error('tab unclosed \'' + last_parse.node_opened.$ + '\'');
+  }
 
   return _cleanNodes(nodes);
 }
