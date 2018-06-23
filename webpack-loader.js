@@ -5,15 +5,21 @@ import tinyHTML from './tinyhtml';
 
 function _stringify (o) {
   if( o instanceof Array ) {
+
     return '[' + o.map(function (_o) {
       return _stringify(_o);
     }).join(',') + ']';
+
   } else if( typeof o === 'object' && o !== null ) {
+
     return '{' + Object.keys(o).map(function (key) {
       return key + ': ' + _stringify(o[key]);
-    }).join(',') + '}'
+    }).join(',') + '}';
+
   } else if( o instanceof Function ) {
+
     return o.toString();
+    
   } else return o;
 }
 
@@ -33,18 +39,18 @@ function _extractScripts (nodes, parent) {
 
 }
 
-function processHTML (html) {
+function html2js (html) {
   return _stringify( _extractScripts(tinyHTML.parse(html)) );
 }
 
-function webpackLoader (source) {
+function webpackLoader (html) {
   // const options = getOptions(this);
 
   // Apply some transformations to the source...
 
-  return `export default ${ JSON.stringify(tinyHTML(source)) }`;
+  return 'export default ' + html2js(html);
 }
 
-webpackLoader.processHTML = processHTML;
+webpackLoader.html2js = html2js;
 
 export default webpackLoader;
