@@ -121,6 +121,8 @@ function _cleanNodes (nodes) {
   return nodes;
 }
 
+// @TODO: parse comments first of all
+
 function parseHTML (html, options) {
   var tags = html.match(RE_full_content) ||[],
       contents = html.split(RE_full_content),
