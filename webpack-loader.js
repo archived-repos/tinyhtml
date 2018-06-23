@@ -19,7 +19,7 @@ function _stringify (o) {
   } else if( o instanceof Function ) {
 
     return o.toString();
-    
+
   } else return o;
 }
 
@@ -39,16 +39,17 @@ function _extractScripts (nodes, parent) {
 
 }
 
-function html2js (html) {
-  return _stringify( _extractScripts(tinyHTML.parse(html)) );
+function html2js (html, options) {
+  return _stringify( _extractScripts(tinyHTML.parse(html), options), options);
 }
 
-function webpackLoader (html) {
+function webpackLoader (html, options) {
+  options = options || {};
   // const options = getOptions(this);
 
   // Apply some transformations to the source...
 
-  return 'export default ' + html2js(html);
+  return 'export default ' + html2js(html, options);
 }
 
 webpackLoader.html2js = html2js;
