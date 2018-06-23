@@ -29,7 +29,7 @@ function _extractScripts (nodes, parent, options) {
   for( var i = nodes.length - 1 ; i >= 0 ; i-- ) {
     if( parent && nodes[i].$ === 'script' ) {
       parent._init = parent._init || [];
-      parent._init.push( new Function( options.processJS ? options.processJS(nodes[i]._) : nodes[i]._ ) );
+      parent._init.push( new Function( options.processScript ? options.processScript(nodes[i]) : nodes[i]._ ) );
       nodes.splice(i, 1);
     } else if( nodes[i]._ instanceof Array ) {
       _extractScripts( nodes[i]._, nodes[i] );
