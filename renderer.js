@@ -5,7 +5,7 @@ function _appendChildren (node, nodes) {
     node_el = _create(nodes[i]);
     node.appendChild( node_el );
     if( nodes[i]._init instanceof Array ) nodes[i]._init.forEach(function (initFn) {
-      initFn.call(node_el, node_el);
+      initFn.call(node_el);
     });
   }
 }
