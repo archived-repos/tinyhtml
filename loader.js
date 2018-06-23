@@ -48,7 +48,7 @@ function loader (html, options) {
 
   // Apply some transformations to the source...
 
-  return 'export default ' + html2js(html, options);
+  return (options.cjs ? 'module.exports = ' : 'export default ') + html2js(html, options);
 }
 
 loader.html2js = html2js;
