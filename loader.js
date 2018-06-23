@@ -42,7 +42,7 @@ function html2js (html, options) {
   return _stringify( _extractScripts(tinyHTML.parse(html), null, options), options);
 }
 
-function webpackLoader (html, options) {
+function loader (html, options) {
   options = options || {};
   // const options = getOptions(this);
 
@@ -51,6 +51,6 @@ function webpackLoader (html, options) {
   return 'export default ' + html2js(html, options);
 }
 
-webpackLoader.html2js = html2js;
+loader.html2js = html2js;
 
-export default webpackLoader;
+export default loader;
