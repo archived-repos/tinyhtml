@@ -13,6 +13,15 @@ describe('parser', function () {
 
   });
 
+  it('attrs in lines', function () {
+
+    assert.deepEqual( parseHTML(`
+<div id="foobar"
+     foo="bar">foo</div>
+    `), [{ $:'div', attrs:{ id: 'foobar', foo: 'bar' }, _:[{ text: 'foo' }] }] );
+
+  });
+
   it('throws', function () {
 
     assert.throws( () => parseHTML('<div id="foobar">'), Error );

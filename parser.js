@@ -21,6 +21,7 @@ function _parseTag (tag_str, options) {
       return '';
     })
     .replace(/ *([^=]+) *= *"([\s\S]*?)"| *([^=]+) *= *'([\s\S]*?)'/g, function (_matched, attribute, value) {
+      attribute = attribute.trim();
       if( attribute === 'style' ) value = value.replace(/([:;])\s+/g, '$1');
       if( options.compress_attibutes !== false ) value = value.replace(/ *\n */g, '').trim();
       tag.attrs[attribute] = value;

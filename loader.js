@@ -13,14 +13,15 @@ function _stringify (o) {
   } else if( typeof o === 'object' && o !== null ) {
 
     return '{' + Object.keys(o).map(function (key) {
-      return key + ': ' + _stringify(o[key]);
+      return ( /[^\w]/.test(key) ? ( '\'' + key + '\'' ) : key ) + ': ' + _stringify(o[key]);
     }).join(',') + '}';
 
   } else if( o instanceof Function ) {
 
     return o.toString();
 
-  } else return o;
+  } else if( typeof o === 'string' ) return '\'' + o.replace(/'/g, '\\\'') + '\'';
+  else return o;
 }
 
 
@@ -38,6 +39,7 @@ function _extractScripts (nodes, parent, options) {
     }
   }
 
+  return nodes;
 }
 
 function html2js (html, options) {
@@ -51,8 +53,12 @@ function loader (html, options) {
 
   // Apply some transformations to the source...
 
+  // var result = 'module.exports = ' + html2js(html, options);
+  //
+  // console.log('\nhtml loader\n', result);
+  //
+  // return result;
   return (options.cjs ? 'module.exports = ' : 'export default ') + html2js(html, options);
-  // return 'module.exports = ' + html2js(html, options);
 }
 
 loader.html2js = html2js;
