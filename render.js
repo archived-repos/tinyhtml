@@ -1,10 +1,9 @@
 
-function _appendChildren (parent, nodes) {
+function _appendChildren (parent, nodes, ns_scheme, options) {
   var node, node_el;
   for( var i = 0, n = nodes.length ; i < n ; i++ ) {
     node = nodes[i];
-    node_el = _create(node, parent);
-    // console.log('_create', nodes[i], node_el, node);
+    node_el = _create(node, parent, ns_scheme, options);
     parent.appendChild( node_el );
     if( node._init instanceof Array ) node._init.forEach(function (initFn) {
       initFn.call(node_el);
@@ -12,24 +11,33 @@ function _appendChildren (parent, nodes) {
   }
 }
 
-function _create(node, _parent) {
+var ns_tags = {
+  svg: 'http://www.w3.org/2000/svg',
+  xbl: 'http://www.mozilla.org/xbl',
+  xul: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
+};
+
+function _create(node, _parent, ns_scheme, options) {
   var node_el;
   if( node.$ ) {
-    node_el = document.createElement(node.$);
+    ns_scheme = ns_scheme || ns_tags[node.$];
+    if( ns_scheme ) node_el = document.createElementNS(ns_scheme, node.$);
+    else node_el = document.createElement(node.$);
+
     if( node.attrs ) {
       for( var key in node.attrs ) node_el.setAttribute(key, node.attrs[key]);
     }
-
-    // console.log('_create:children %c' + node.$, 'color: blue; font-weight: bold', node._ instanceof Array, node._ );
-    if( node._ instanceof Array ) _appendChildren(node_el, node._);
+    if( node._ instanceof Array ) _appendChildren(node_el, node._, ns_scheme, options);
     else if( node._ ) node_el.textContent = node._;
+
+    if( options.init && options.init[node.$] instanceof Function ) options.init[node.$].call(node_el, node_el);
   } else if( node.text ) return document.createTextNode(node.text);
-  // console.log('_create %c' + node.$, 'color: brown; font-weight: bold', node, node_el.outerHTML );
 
   return node_el;
 }
 
-module.exports = function renderNodes (parent, nodes) {
-  // console.log('renderNodes', parent, nodes);
-  _appendChildren(parent, nodes);
+module.exports = function renderNodes (parent, nodes, options) {
+  while( parent.firstChild ) parent.removeChild(parent.firstChild);
+  _appendChildren(parent, nodes, null, options || {});
+  return nodes;
 };
