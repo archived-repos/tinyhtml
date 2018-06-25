@@ -45,8 +45,6 @@ module.exports = function renderNodes (parent, nodes, options) {
   while( parent.firstChild ) parent.removeChild(parent.firstChild);
   var inits_list = [];
   _appendChildren(parent, nodes, null, options || {}, inits_list);
-  inits_list.forEach(function (init_o) {
-    init_o.fn.call(init_o.this_arg, init_o.attrs);
-  });
+  inits_list.forEach(function (initFn) { initFn(); });
   return nodes;
 };
