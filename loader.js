@@ -1,7 +1,7 @@
 
 // import { getOptions } from 'loader-utils';
 
-import tinyHTML from './tinyhtml';
+var tinyHTML = require('./tinyhtml');
 
 function _stringify (o) {
   if( o instanceof Array ) {
@@ -25,20 +25,23 @@ function _stringify (o) {
 
 
 function _extractScripts (nodes, parent, options) {
+  // console.log('_extractScripts', options );
 
   for( var i = nodes.length - 1 ; i >= 0 ; i-- ) {
     if( parent && nodes[i].$ === 'script' ) {
       parent._init = parent._init || [];
+      // console.log('_init', options.processScript ? options.processScript(nodes[i]) : nodes[i]._ );
       parent._init.push( new Function( options.processScript ? options.processScript(nodes[i]) : nodes[i]._ ) );
       nodes.splice(i, 1);
     } else if( nodes[i]._ instanceof Array ) {
-      _extractScripts( nodes[i]._, nodes[i] );
+      _extractScripts( nodes[i]._, nodes[i], options );
     }
   }
 
 }
 
 function html2js (html, options) {
+  options = options || {};
   return _stringify( _extractScripts(tinyHTML.parse(html), null, options), options);
 }
 
@@ -49,8 +52,10 @@ function loader (html, options) {
   // Apply some transformations to the source...
 
   return (options.cjs ? 'module.exports = ' : 'export default ') + html2js(html, options);
+  // return 'module.exports = ' + html2js(html, options);
 }
 
 loader.html2js = html2js;
 
-export default loader;
+// export default loader;
+module.exports = loader;
