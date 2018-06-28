@@ -98,7 +98,7 @@ var full_content_tags = [
   'code',
 ];
 
-var RE_full_content = new RegExp(full_content_tags.map(function (tag_name) {
+var RE_full_content = new RegExp( '<!--|-->|' + full_content_tags.map(function (tag_name) {
   return '<' + tag_name + '[^>]*>|<\\/' + tag_name + '>';
 }).join('|'), 'g');
 
@@ -150,7 +150,18 @@ function parseHTML (html, options) {
     //   node_opened: last_parse.node_opened,
     // }) );
 
-    tag = _parseTag(tag, options);
+    if( tag_opened ) {
+      if(
+        ( tag_opened.comments && tag === '-->' ) ||
+        ( tag_opened.$ && new RegExp('^\\/' + tag_opened.$ + '$').test() )
+      )
+    } else {
+      
+    }
+
+    if( tag === '<!--' ) tag = { comments: true };
+    else if( tag === '-->' ) tag = { comments: true, closer: true };
+    else tag = _parseTag(tag, options);
 
     if( tag.closer ) {
       if( !tag_opened || tag_opened.$ !== tag.$ ) throw new Error('tag closer \'' + tag.$ + '\' for \'' + (tag_opened ? tag_opened.$ : '!tag_opened') + '\'' );
