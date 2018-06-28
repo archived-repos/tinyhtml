@@ -3,6 +3,8 @@ FROM node:8.0-alpine AS builder
 
 WORKDIR /app
 
+RUN apk --update add make
+
 COPY package.json /app
 
 # Creating tar of productions dependencies
