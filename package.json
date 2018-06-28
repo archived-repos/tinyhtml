@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/kiltjs/tinyhtml#readme",
   "devDependencies": {
-    "eslint": "4.19.1",
+    "eslint": "5.0.1",
     "mocha": "5.2.0"
   }
 }
