@@ -1,6 +1,6 @@
 {
   "name": "tinyhtml",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "HTML minifier",
   "main": "tinyhtml.js",
   "scripts": {
