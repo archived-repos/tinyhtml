@@ -1,19 +1,22 @@
 
 // import { getOptions } from 'loader-utils';
 
-var tinyHTML = require('./tinyhtml');
+var tinyHTML = require('./tinyhtml'),
+    _isNotNull = function (o) { return o !== null; };
 
-function _stringify (o) {
+function _stringify (o, options) {
   if( o instanceof Array ) {
 
     return '[' + o.map(function (_o) {
-      return _stringify(_o);
-    }).join(',') + ']';
+      return _stringify(_o, options);
+    }).filter(_isNotNull).join(',') + ']';
 
   } else if( typeof o === 'object' && o !== null ) {
 
+    if( options.remove_comments !== false && o.comments ) return null;
+
     return '{' + Object.keys(o).map(function (key) {
-      return ( /^[a-zA-Z_$]+$/.test(key) ? key : ( '\'' + key + '\'' ) ) + ':' + _stringify(o[key]);
+      return ( /^[a-zA-Z_$]+$/.test(key) ? key : ( '\'' + key + '\'' ) ) + ':' + _stringify(o[key], options);
     }).join(',') + '}';
 
   } else if( o instanceof Function ) {
@@ -44,7 +47,8 @@ function _extractScripts (nodes, parent, options) {
 
 function html2js (html, options) {
   options = options || {};
-  return _stringify( _extractScripts(tinyHTML.parse(html), null, options), options);
+  if( options.extract_scripts !== false ) return _stringify( _extractScripts(tinyHTML.parse(html), null, options), options );
+  return _stringify( tinyHTML.parse(html), options );
 }
 
 function loader (html, options) {

@@ -21,4 +21,20 @@ describe('loader', function () {
 
   });
 
+  it('with comments', function () {
+
+    assert.strictEqual( loadHTML(`<style>
+  @import '/assets/styles.css';
+</style><!-- foobar -->`, { remove_comments: false }), `export default [{_:'\\n  @import \\'/assets/styles.css\\';\\n',$:'style'},{comments:true,_:' foobar '}];` );
+
+  });
+
+  it('comments removed', function () {
+
+    assert.strictEqual( loadHTML(`<style>
+  @import '/assets/styles.css';
+</style><!-- foobar -->`), `export default [{_:'\\n  @import \\'/assets/styles.css\\';\\n',$:'style'}];` );
+
+  });
+
 });

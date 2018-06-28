@@ -47,7 +47,7 @@ function _parseHTML (html, options) {
   options = options || {};
 
   // removing comments
-  if( options.remove_comments !== false ) html = html.replace(/<!--([\s\S]+?)-->/g, '');
+  // if( options.remove_comments !== false ) html = html.replace(/<!--([\s\S]+?)-->/g, '');
 
   var contents = html.split(/<[^>]+?>/g);
   // var tags = html.match(/<([^>]+?)>/g);
@@ -109,6 +109,9 @@ function _cleanNodes (nodes) {
     // avoiding circular structure
     delete tag._parent;
 
+    // removing temporary tester
+    delete tag.match_closer;
+
     // cleaning empty attributes
     if( tag.attrs && Object.keys(tag.attrs).length === 0 ) delete tag.attrs;
 
@@ -151,33 +154,44 @@ function parseHTML (html, options) {
     // }) );
 
     if( tag_opened ) {
-      if(
-        ( tag_opened.comments && tag === '-->' ) ||
-        ( tag_opened.$ && new RegExp('^\\/' + tag_opened.$ + '$').test() )
-      )
+      if( tag_opened.match_closer.test(tag) ) {
+        delete tag_opened.unclosed;
+        tag_opened = null;
+      } else {
+        tag_opened._ = tag;
+      }
     } else {
-      
+      if( tag === '<!--' ) tag_opened = { comments: true, match_closer: /^-->$/, unclosed: true };
+      else {
+        tag_opened = _parseTag(tag, options);
+        tag_opened.match_closer = new RegExp('^<\\/ *' + tag_opened.$ + ' *>$');
+      }
+
+      if( tag === '-->' ) throw new Error('unexpected comments closer \'-->\'');
+      if( tag_opened.closer ) throw new Error('unexpected tag closer \'' + tag.$ + '\'');
+
+      (last_parse.node_opened ? last_parse.node_opened._ : nodes).push(tag_opened);
     }
 
-    if( tag === '<!--' ) tag = { comments: true };
-    else if( tag === '-->' ) tag = { comments: true, closer: true };
-    else tag = _parseTag(tag, options);
-
-    if( tag.closer ) {
-      if( !tag_opened || tag_opened.$ !== tag.$ ) throw new Error('tag closer \'' + tag.$ + '\' for \'' + (tag_opened ? tag_opened.$ : '!tag_opened') + '\'' );
-      delete tag_opened.unclosed;
-      tag_opened = null;
-    } else {
-      tag_opened = tag;
-      (last_parse.node_opened ? last_parse.node_opened._ : nodes).push(tag);
-
-      // if( last_parse.node_opened ) {
-      //   last_parse.node_opened._ = last_parse.node_opened._ || [];
-      //   last_parse.node_opened._.push(tag);
-      // } else {
-      //   nodes.push(tag);
-      // }
-    }
+    // if( tag === '<!--' ) tag = { comments: true };
+    // else if( tag === '-->' ) tag = { comments: true, closer: true };
+    // else tag = _parseTag(tag, options);
+    //
+    // if( tag.closer ) {
+    //   if( !tag_opened || tag_opened.$ !== tag.$ ) throw new Error('tag closer \'' + tag.$ + '\' for \'' + (tag_opened ? tag_opened.$ : '!tag_opened') + '\'' );
+    //   delete tag_opened.unclosed;
+    //   tag_opened = null;
+    // } else {
+    //   tag_opened = tag;
+    //   (last_parse.node_opened ? last_parse.node_opened._ : nodes).push(tag);
+    //
+    //   // if( last_parse.node_opened ) {
+    //   //   last_parse.node_opened._ = last_parse.node_opened._ || [];
+    //   //   last_parse.node_opened._.push(tag);
+    //   // } else {
+    //   //   nodes.push(tag);
+    //   // }
+    // }
 
   });
 
