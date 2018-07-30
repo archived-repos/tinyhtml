@@ -15,6 +15,7 @@ function _appendChildren (parent, nodes, ns_scheme, options, inits_list) {
     node_el = _create(node, parent, ns_scheme, options, inits_list);
     parent.appendChild( node_el );
     _addInits(inits_list, node_el, options.init && options.init[node.$], node._init );
+    if( options.initNode instanceof Function ) options.initNode(node_el, node);
   }
 }
 
