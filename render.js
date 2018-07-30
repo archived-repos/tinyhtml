@@ -13,10 +13,12 @@ function _appendChildren (parent, nodes, ns_scheme, options, inits_list) {
   for( var i = 0, n = nodes.length ; i < n ; i++ ) {
     node = nodes[i];
     node_el = _create(node, parent, ns_scheme, options, inits_list);
-    parent.appendChild( node_el );
+    if( options.insert_before ) parent.insertBefore(node_el, options.insert_before);
+    else parent.appendChild( node_el );
     _addInits(inits_list, node_el, options.init && options.init[node.$], node._init );
     if( options.initNode instanceof Function ) options.initNode(node_el, node);
   }
+  options.insert_before = null;
 }
 
 var ns_tags = {
@@ -45,7 +47,7 @@ function _create(node, _parent, ns_scheme, options, inits_list) {
 module.exports = function renderNodes (parent, nodes, options) {
   while( parent.firstChild ) parent.removeChild(parent.firstChild);
   var inits_list = [];
-  _appendChildren(parent, nodes, null, options || {}, inits_list);
+  _appendChildren(parent, nodes, null, Object.create(options || {}), inits_list);
   inits_list.forEach(function (initFn) { initFn(); });
   return nodes;
 };
