@@ -17,7 +17,7 @@ function _appendChildren (parent, nodes, ns_scheme, options, inits_list) {
 
     preprocess_result = options.preprocessNode instanceof Function && options.preprocessNode(node) || {};
 
-    if( preprocess_result.render_comment ) node_el.createComment(options.render_comment);
+    if( preprocess_result.render_comment ) document.createComment(options.render_comment);
     else node_el = _create(node, parent, ns_scheme, options, inits_list);
 
     if( insert_before ) parent.insertBefore(node_el, insert_before);
