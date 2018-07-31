@@ -9,15 +9,22 @@ function _addInits (inits_list, node_el, tagInitFn, node_inits) {
 }
 
 function _appendChildren (parent, nodes, ns_scheme, options, inits_list) {
-  var node, node_el, insert_before = options.insert_before;
+  var node, node_el, insert_before = options.insert_before, preprocess_result;
   options.insert_before = null;
 
   for( var i = 0, n = nodes.length ; i < n ; i++ ) {
     node = nodes[i];
-    node_el = _create(node, parent, ns_scheme, options, inits_list);
+
+    preprocess_result = options.preprocessNode instanceof Function && options.preprocessNode(node) || {};
+
+    if( preprocess_result.render_comment ) node_el.createComment(options.render_comment);
+    else node_el = _create(node, parent, ns_scheme, options, inits_list);
+
     if( insert_before ) parent.insertBefore(node_el, insert_before);
     else parent.appendChild( node_el );
+
     _addInits(inits_list, node_el, options.init && options.init[node.$], node._init );
+
     if( options.initNode instanceof Function ) options.initNode(node_el, node);
   }
 }
