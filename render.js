@@ -15,9 +15,9 @@ function _appendChildren (parent, nodes, ns_scheme, options, inits_list) {
   for( var i = 0, n = nodes.length ; i < n ; i++ ) {
     node = nodes[i];
 
-    preprocess_result = options.preprocessNode instanceof Function && options.preprocessNode(node) || {};
+    preprocess_result = !options.skip_preprocess && options.preprocessNode instanceof Function && options.preprocessNode(node) || {};
 
-    if( preprocess_result.render_comment ) node_el = document.createComment(options.render_comment);
+    if( preprocess_result.render_comment ) node_el = document.createComment(preprocess_result.render_comment);
     else node_el = _create(node, parent, ns_scheme, options, inits_list);
 
     if( insert_before ) parent.insertBefore(node_el, insert_before);
