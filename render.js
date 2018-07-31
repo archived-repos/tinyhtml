@@ -45,9 +45,12 @@ function _create(node, _parent, ns_scheme, options, inits_list) {
 }
 
 module.exports = function renderNodes (parent, nodes, options) {
-  while( parent.firstChild ) parent.removeChild(parent.firstChild);
+  options = Object.create(options || {});
+  if( !options.insert_before && options.keep_content !== true ) {
+    while( parent.firstChild ) parent.removeChild(parent.firstChild);
+  }
   var inits_list = [];
-  _appendChildren(parent, nodes, null, Object.create(options || {}), inits_list);
+  _appendChildren(parent, nodes, null, options, inits_list);
   inits_list.forEach(function (initFn) { initFn(); });
   return nodes;
 };
