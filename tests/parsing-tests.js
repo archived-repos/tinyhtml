@@ -1,6 +1,6 @@
 /* global describe, it */
 
-var parseHTML = require('../parser'),
+var parseHTML = require('../lib/parser'),
     assert = require('assert');
 
 describe('parser', function () {

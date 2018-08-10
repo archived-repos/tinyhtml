@@ -1,6 +1,6 @@
 /* global describe, it */
 
-var tinyHTML = require('../tinyhtml'),
+var tinyHTML = require('../lib/tinyhtml'),
     assert = require('assert');
 
 var snippetWikipedia = {

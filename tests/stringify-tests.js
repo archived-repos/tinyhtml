@@ -1,7 +1,7 @@
 /* global describe, it */
 
-var parseHTML = require('../parser'),
-    stringifyNodes = require('../stringify'),
+var parseHTML = require('../lib/parser'),
+    stringifyNodes = require('../lib/stringify'),
     assert = require('assert');
 
 describe('stringify', function () {

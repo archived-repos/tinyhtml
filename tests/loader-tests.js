@@ -1,6 +1,6 @@
 /* global describe, it */
 
-var loadHTML = require('../loader'),
+var loadHTML = require('../lib/loader'),
     assert = require('assert');
 
 describe('loader', function () {

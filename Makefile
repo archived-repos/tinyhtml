@@ -7,9 +7,7 @@ install:
 	npm install
 
 eslint:
-	$(shell npm bin)/eslint parser.js
-	$(shell npm bin)/eslint stringify.js
-	$(shell npm bin)/eslint tinyhtml.js
+	$(shell npm bin)/eslint lib
 	$(shell npm bin)/eslint tests
 
 karma:
@@ -21,8 +19,14 @@ test: install eslint
 npm.publish:
 	npm version patch
 	git push origin $(git_branch) && git push --tags
-	npm publish
-	@echo "published ${PKG_VERSION}"s
+	cp package.json lib
+	cp README.md lib
+	cp LICENSE lib
+	cd lib && npm publish
+	rm lib/package.json
+	rm lib/README.md
+	rm lib/LICENSE
+	@echo "published ${PKG_VERSION}"
 
 github.release: export PKG_NAME=$(shell node -e "console.log(require('./package.json').name);")
 github.release: export PKG_VERSION=$(shell node -e "console.log('v'+require('./package.json').version);")

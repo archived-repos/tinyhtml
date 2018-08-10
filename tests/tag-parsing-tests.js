@@ -1,6 +1,6 @@
 /* global describe, it */
 
-var tinyHTML = require('../tinyhtml'),
+var tinyHTML = require('../lib/tinyhtml'),
     assert = require('assert');
 
 var snippet_script = `foo<script src="http://example.com/script.js">
