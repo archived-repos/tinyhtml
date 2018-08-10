@@ -16,10 +16,12 @@ karma:
 test: install eslint
 	@$(shell npm bin)/mocha tests
 
-npm.publish:
+npm.version:
 	git pull --tags
 	npm version patch
 	git push origin $(git_branch) && git push --tags
+
+npm.publish:
 	cp package.json lib
 	cp README.md lib
 	cp LICENSE lib
@@ -38,4 +40,4 @@ github.release:
 	@echo ${RELEASE_URL}
 	@true
 
-release: test npm.publish github.release
+release: test npm.version npm.publish github.release
