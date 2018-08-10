@@ -17,6 +17,7 @@ test: install eslint
 	@$(shell npm bin)/mocha tests
 
 npm.publish:
+	git pull --tags
 	npm version patch
 	git push origin $(git_branch) && git push --tags
 	cp package.json lib
