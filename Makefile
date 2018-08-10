@@ -25,7 +25,7 @@ npm.publish:
 	cp package.json lib
 	cp README.md lib
 	cp LICENSE lib
-	cd lib && npm publish
+	- cd lib && npm publish
 	rm lib/package.json
 	rm lib/README.md
 	rm lib/LICENSE
