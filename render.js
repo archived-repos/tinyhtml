@@ -1,32 +1,36 @@
 
-function _addInits (inits_list, node_el, tagInitFn, node_inits) {
-  if( tagInitFn instanceof Function || node_inits instanceof Array ) inits_list.push(function () {
-    if( tagInitFn ) tagInitFn.call(node_el, node_el);
-    if( node_inits ) node_inits.forEach(function (initFn) {
-      initFn.call(node_el, node_el);
-    });
-  });
-}
-
 function _appendChildren (parent, nodes, ns_scheme, options, inits_list) {
-  var node, node_el, insert_before = options.insert_before, preprocess_result;
+  var node, node_el, with_node,
+      inserted_nodes = [],
+      insert_before = options.insert_before;
+
   options.insert_before = null;
 
   for( var i = 0, n = nodes.length ; i < n ; i++ ) {
     node = nodes[i];
 
-    preprocess_result = !options.skip_preprocess && options.preprocessNode instanceof Function && options.preprocessNode(node) || {};
+    with_node = options.withNode(node) ||{};
 
-    if( preprocess_result.render_comment ) node_el = document.createComment(preprocess_result.render_comment);
+    if( with_node.replace_by_comment ) node_el = document.createComment(with_node.replace_by_comment);
     else node_el = _create(node, parent, ns_scheme, options, inits_list);
 
     if( insert_before ) parent.insertBefore(node_el, insert_before);
     else parent.appendChild( node_el );
 
-    _addInits(inits_list, node_el, options.init && options.init[node.$], node._init );
+    if( with_node.initNode ) inits_list.push(function () {
+      with_node.initNode.call(node_el, node_el, node, with_node);
+    });
 
     if( options.initNode instanceof Function ) options.initNode(node_el, node);
+
+    inserted_nodes.push({
+      el: node_el,
+      options: node,
+      with_node: with_node,
+    });
   }
+
+  return inserted_nodes;
 }
 
 var ns_tags = {
@@ -54,11 +58,18 @@ function _create(node, _parent, ns_scheme, options, inits_list) {
 
 module.exports = function renderNodes (parent, nodes, options) {
   options = Object.create(options || {});
+
+  if( typeof options.withNode !== 'function' ) options.withNode = function () {};
+
   if( !options.insert_before && options.keep_content !== true ) {
-    while( parent.firstChild ) parent.removeChild(parent.firstChild);
+    while( parent.firstChild )
+      parent.removeChild(parent.firstChild);
   }
-  var inits_list = [];
-  _appendChildren(parent, nodes, null, options, inits_list);
+
+  var inits_list = [],
+      inserted_nodes = _appendChildren(parent, nodes, null, options, inits_list);
+
   inits_list.forEach(function (initFn) { initFn(); });
-  return nodes;
+
+  return inserted_nodes;
 };
