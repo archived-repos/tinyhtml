@@ -16,9 +16,15 @@ describe('eval no filters', function () {
 
   var getFooBar = TEXT.eval('foo.bar');
 
-  it('foo filter', function () {
+  it('get foobar', function () {
 
     assert.deepEqual( getFooBar({ foo: { bar: 'foobar' } }), 'foobar' );
+
+  });
+
+  it('ReferenceError €', function () {
+
+    assert.strictEqual( TEXT.eval(' symbol || \'€\' ')(), '€' );
 
   });
 
