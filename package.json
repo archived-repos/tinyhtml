@@ -1,5 +1,5 @@
 {
-  "name": "tinyhtml",
+  "name": "@kilt/tinyhtml",
   "version": "0.0.68",
   "description": "HTML minifier",
   "main": "tinyhtml.js",
@@ -24,5 +24,8 @@
   "devDependencies": {
     "eslint": "5.0.1",
     "mocha": "5.2.0"
+  },
+  "dependencies": {
+    "@kilt/con-text": "^0.1.1"
   }
 }
