@@ -21,7 +21,7 @@ npm.version:
 	npm version patch
 	git push origin $(git_branch) && git push --tags
 
-npm.publish: export LEGACY_PKG_NAME=form-knox
+npm.publish: export LEGACY_PKG_NAME=tinyhtml
 npm.publish:
 	cp package.json lib
 	cp README.md lib
