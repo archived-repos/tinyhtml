@@ -27,7 +27,7 @@ npm.publish:
 	cp LICENSE lib
 	- cd lib && npm publish
 	- node -e "var fs = require('fs'); var pkg = require('./lib/package.json'); pkg.name = '@kilt/tinyhtml'; fs.writeFile('lib/package.json', JSON.stringify(pkg, null, '  '), 'utf8', function (err) { if( err ) console.log('Error: ' + err); });"
-	- cd lib && npm publish
+	- cd lib && npm publish --access public
 	rm lib/package.json
 	rm lib/README.md
 	rm lib/LICENSE
