@@ -1,6 +1,6 @@
 {
   "name": "@kilt/tinyhtml",
-  "version": "0.0.68",
+  "version": "0.0.69",
   "description": "HTML minifier",
   "main": "tinyhtml.js",
   "scripts": {
