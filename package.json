@@ -26,6 +26,6 @@
     "mocha": "5.2.0"
   },
   "dependencies": {
-    "@kilt/con-text": "^0.1.1"
+    "@trisquel/con-text": "^0.1.2"
   }
 }
